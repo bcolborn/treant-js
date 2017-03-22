@@ -1,3 +1,5 @@
+var sheet = "https://docs.google.com/spreadsheets/u/1/d/1kdDbjjYdVMweKUMzAWTx1z3xfNFcx-ykMZabbqYHtl8/gviz/tq?tqx=out:csv&tq=select%20*";
+
 var chart_config = {
     chart: {
         container: "#custom-colored",
@@ -13,88 +15,63 @@ var chart_config = {
         }
     },
     nodeStructure: {
-        text: {
-            name: "Solar system",
-            desc: "Our home"
-        },
-        children:[ {
-            text: {
-                name: "Terrestrial",
-                desc: "Like earth"
-            },
-            HTMLclass: 'blue',
-            children:[ {
-                text: {
-                    name: "Mercury"
-                },
-                HTMLclass: 'blue'
-            }, {
-                text: {
-                    name: "Venus"
-                },
-                HTMLclass: 'blue'
-            }, {
-                text: {
-                    name: "Earth",
-                    desc: "Blue and green ball"
-                },
-                HTMLclass: 'blue'
-            }, {
-                text: {
-                    name: "Mars"
-                },
-                HTMLclass: 'blue'
-            }]
-        }, {
-            text: {
-                name: "Jovian Planets",
-                desc: "The big ones"
-            },
-            HTMLclass: 'orange',
-            children:[ {
-                text: {
-                    name: "Jupiter"
-                },
-                HTMLclass: 'orange'
-            }, {
-                text: {
-                    name: "Saturn"
-                },
-                HTMLclass: 'orange'
-            }, {
-                text: {
-                    name: "Neptune"
-                },
-                HTMLclass: 'orange'
-            }, {
-                text: {
-                    name: "Uranus"
-                },
-                HTMLclass: 'orange'
-            }]
-        }, {
-            text: {
-                name: "Dwarf Planets",
-                desc: "The little ones"
-            },
-            HTMLclass: 'light-gray',
-            children:[ {
-                text: {
-                    name: "Pluto",
-                    desc: "Demoted from planet status"
-                },
-                HTMLclass: 'light-gray'
-            }, {
-                text: {
-                    name: "Eris"
-                },
-                HTMLclass: 'light-gray'
-            }, {
-                text: {
-                    name: "Ceres"
-                },
-                HTMLclass: 'light-gray'
-            }]
-        }],
     }
 };
+
+$.get(sheet, {
+    format: "text"
+}).done(function (data) {
+    var mapData = csv2obj(data);
+    console.log(mapData);
+});
+
+
+// Utility functions
+
+function parse(row) {
+    var insideQuote = false,
+    entries =[],
+    entry =[];
+    row.split('').forEach(function (character) {
+        if (character === '"') {
+            insideQuote = ! insideQuote;
+        } else {
+            if (character == "," && ! insideQuote) {
+                entries.push(entry.join(''));
+                entry =[];
+            } else {
+                entry.push(character);
+            }
+        }
+    });
+    
+    entries.push(entry.join(''));
+    return entries;
+}
+
+function csv2obj(csv) {
+
+    // Split the input into lines
+    lines = csv.split('\n').filter(String);
+    
+    // Extract column names from the first line
+    columnNamesLine = lines[0].replace(/\s+/g, "");
+    columnNames = parse(columnNamesLine);
+    //console.log(columnNames);
+    
+    // Extract data from subsequent lines
+    dataLines = lines.slice(1);
+    data = dataLines.map(parse);
+    
+    var dataObjects = data.map(function (arr) {
+        var dataObject = {
+        };
+        columnNames.forEach(function (columnName, i) {
+            dataObject[columnName] = arr[i];
+        });
+        return dataObject;
+    });
+    
+    //console.log(JSON.stringify(dataObjects));
+    return dataObjects;
+}
