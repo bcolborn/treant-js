@@ -21,57 +21,23 @@ var chart_config = {
 $.get(sheet, {
     format: "text"
 }).done(function (data) {
-    var mapData = csv2obj(data);
+    var mapData = csv2arr(data);
     console.log(mapData);
-});
 
+});
 
 // Utility functions
 
-function parse(row) {
-    var insideQuote = false,
-    entries =[],
-    entry =[];
-    row.split('').forEach(function (character) {
-        if (character === '"') {
-            insideQuote = ! insideQuote;
-        } else {
-            if (character == "," && ! insideQuote) {
-                entries.push(entry.join(''));
-                entry =[];
-            } else {
-                entry.push(character);
-            }
+function csv2arr(csv) {
+    var lines = csv.split(/\n/) // Convert to one string per line
+    .map(function (lineStr) {
+        // Convert each line to array (,)
+        var row = lineStr.split(",");
+        for (var cell in row) {
+            row[cell] = row[cell].replace(/\"/g, '');
+            console.log(row[cell]);
         }
-    });
-    
-    entries.push(entry.join(''));
-    return entries;
-}
-
-function csv2obj(csv) {
-
-    // Split the input into lines
-    lines = csv.split('\n').filter(String);
-    
-    // Extract column names from the first line
-    columnNamesLine = lines[0].replace(/\s+/g, "");
-    columnNames = parse(columnNamesLine);
-    //console.log(columnNames);
-    
-    // Extract data from subsequent lines
-    dataLines = lines.slice(1);
-    data = dataLines.map(parse);
-    
-    var dataObjects = data.map(function (arr) {
-        var dataObject = {
-        };
-        columnNames.forEach(function (columnName, i) {
-            dataObject[columnName] = arr[i];
-        });
-        return dataObject;
-    });
-    
-    //console.log(JSON.stringify(dataObjects));
-    return dataObjects;
+        console.log(row);
+    }).slice(1);
+    return JSON.stringify(lines, null, 2);
 }
