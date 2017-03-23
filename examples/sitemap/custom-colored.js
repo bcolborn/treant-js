@@ -22,11 +22,25 @@ $.get(sheet, {
     format: "text"
 }).done(function (data) {
     var mapData = csv2arr(data);
-    console.log(mapData);
-
+    //console.log(mapData);
+    //nodeStructure = arr2chart(mapData)
+    arr2chart(mapData);
 });
 
-// Utility functions
+function arr2chart(arr) {
+    var chart = {
+    };
+    console.log(arr);
+    chart.top = toString(arr[0]);
+    console.log(chart);
+    for (var i = 0; i < arr.length; i++) {
+        var arr2 = arr[i];
+        for (var j = 0; j < arr2.length; j++) {
+            console.log("arr[" + i + "][" + j + "] = " + arr2[j]);
+        }
+    }
+    return arr;
+}
 
 function csv2arr(csv) {
     var lines = csv.split(/\n/) // Convert to one string per line
@@ -35,9 +49,11 @@ function csv2arr(csv) {
         var row = lineStr.split(",");
         for (var cell in row) {
             row[cell] = row[cell].replace(/\"/g, '');
-            console.log(row[cell]);
+            //console.log(row[cell]);
         }
-        console.log(row);
+        return row;
+        //console.log(row);
     }).slice(1);
+    //console.log(lines);
     return JSON.stringify(lines, null, 2);
 }
