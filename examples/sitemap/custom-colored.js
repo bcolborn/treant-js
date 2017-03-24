@@ -43,7 +43,7 @@ function list2obj(current, depth) {
     for (var i = 0, len = children.length; i < len; i++) {
         list2obj(children[i], depth + 1);
     }
-    if (current.nodeName == '#text') {
+    if (current.nodeName == '#text' && current.wholeText.match(/\w+/)) {
         console.log(depth);
         console.log(current);
         return (current);
