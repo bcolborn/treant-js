@@ -1,5 +1,3 @@
-var sheet = "https://docs.google.com/spreadsheets/u/1/d/1kdDbjjYdVMweKUMzAWTx1z3xfNFcx-ykMZabbqYHtl8/gviz/tq?tqx=out:csv&tq=select%20*";
-
 var chart_config = {
     chart: {
         container: "#custom-colored",
@@ -18,42 +16,36 @@ var chart_config = {
     }
 };
 
-$.get(sheet, {
-    format: "text"
-}).done(function (data) {
-    var mapData = csv2arr(data);
-    //console.log(mapData);
-    //nodeStructure = arr2chart(mapData)
-    arr2chart(mapData);
-});
+//chart_config.nodeStructure =
+list2obj(document.getElementById("nodeStructure"), 0);
+var list =[];
+//chart_config.nodeStructure = getNestedChildren(list, document.getElementById("nodeStructure"));
 
-function arr2chart(arr) {
-    var chart = {
-    };
-    console.log(arr);
-    chart.top = toString(arr[0]);
-    console.log(chart);
-    for (var i = 0; i < arr.length; i++) {
-        var arr2 = arr[i];
-        for (var j = 0; j < arr2.length; j++) {
-            console.log("arr[" + i + "][" + j + "] = " + arr2[j]);
+
+function getNestedChildren(arr, parent) {
+    var out =[]
+    for (var i in arr) {
+        if (arr[i].parent == parent) {
+            var children = getNestedChildren(arr, arr[i].id)
+            
+            if (children.length) {
+                arr[i].children = children
+            }
+            out.push(arr[i])
         }
     }
-    return arr;
+    console.log(out);
+    return out;
 }
-
-function csv2arr(csv) {
-    var lines = csv.split(/\n/) // Convert to one string per line
-    .map(function (lineStr) {
-        // Convert each line to array (,)
-        var row = lineStr.split(",");
-        for (var cell in row) {
-            row[cell] = row[cell].replace(/\"/g, '');
-            //console.log(row[cell]);
-        }
-        return row;
-        //console.log(row);
-    }).slice(1);
-    //console.log(lines);
-    return JSON.stringify(lines, null, 2);
+function list2obj(current, depth) {
+    //console.log(current);
+    var children = current.childNodes;
+    for (var i = 0, len = children.length; i < len; i++) {
+        list2obj(children[i], depth + 1);
+    }
+    if (current.nodeName == '#text') {
+        console.log(depth);
+        console.log(current);
+        return (current);
+    }
 }

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta name="viewport" content="width=device-width" />
         <title> Custom colored example </title>
         <link rel="stylesheet" href="../../Treant.css" />
@@ -10,6 +9,18 @@
 
     </head>
     <body>
+        <ol id="nodeStructure">
+            <li>Sun<ol>
+                    <li>Terrestrial planets<ol>
+                            <li>Mercury</li>
+                            <li>Venus</li>
+                            <li>Earth</li>
+                            <li>Mars</li>
+                        </ol></li>
+                    <li>Jovian planets</li>
+                    <li>Dwarf planets</li>
+                </ol></li>
+        </ol>
         <div class="chart" id="custom-colored"> --@-- </div>
         <script src="../../vendor/raphael.js"></script>
         <script src="../../Treant.js"></script>
